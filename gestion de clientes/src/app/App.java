@@ -4,69 +4,98 @@ import gestion_clientes.model.Usuario;
 import service.UsuarioService;
 import gestion_clientes.model.Rol;
 
+
+/**
+ * Clase Main
+ * 
+ * Punto de inicio del programa.
+ * Aquí se simula el uso del sistema de gestión de usuarios.
+ */
 public class App {
     public static void main(String[] args) throws Exception {
 
-         // Creamos el servicio principal
-        UsuarioService service = new UsuarioService();
+        // =========================
+        // CREACIÓN DEL SERVICIO
+        // =========================
 
-        // Creamos usuarios
+        // Creamos el servicio que manejará los usuarios
+        UsuarioService usuarioService = new UsuarioService();
+
+        // =========================
+        // CREACIÓN DE USUARIOS
+        // =========================
+
+        // Creamos un usuario administrador
         Usuario admin = new Usuario(
-                1,
-                "Administrador General",
-                "admin",
-                "admin123",
-                Rol.ADMINISTRADOR
+            1,
+            "Administrador General",
+            "admin",
+            "1234",
+            Rol.ADMINISTRADOR
         );
 
+        // Creamos un usuario estándar
         Usuario user1 = new Usuario(
-                2,
-                "Laura Torres",
-                "laura",
-                "1234",
-                Rol.ESTANDAR
+            2,
+            "Juan Pérez",
+            "juan",
+            "abcd",
+            Rol.ESTANDAR
         );
 
-        Usuario user2 = new Usuario(
-                3,
-                "Carlos Pérez",
-                "carlos",
-                "abcd",
-                Rol.ESTANDAR
-        );
+        // =========================
+        // REGISTRO DE USUARIOS
+        // =========================
 
-        // El administrador crea los usuarios
-        service.crearUsuario(admin, admin);
-        service.crearUsuario(admin, user1);
-        service.crearUsuario(admin, user2);
+        // El administrador registra usuarios en el sistema
+        usuarioService.crearUsuario(admin, admin);
+        usuarioService.crearUsuario(admin, user1);
 
-        // -------- SIMULACIÓN DE SESIONES --------
+        // =========================
+        // INICIO DE SESIÓN
+        // =========================
 
-        // Sesión 1: Laura inicia sesión correctamente
-        Usuario sesionLaura = service.login("laura", "1234");
-        if (sesionLaura != null) {
-            service.actualizarNombre(sesionLaura, 2, "Laura T.");
+        // Intento de login correcto
+        Usuario sesion = usuarioService.login("juan", "abcd");
+
+        if (sesion != null) {
+            System.out.println("Sesión iniciada por: " + sesion.getNombreCompleto());
         }
 
-        // Sesión 2: Carlos se equivoca de contraseña
-        Usuario sesionCarlos = service.login("carlos", "xxxx");
+        // =========================
+        // INTENTOS FALLIDOS (BLOQUEO)
+        // =========================
 
-        // Sesión 3: Carlos intenta de nuevo correctamente
-        sesionCarlos = service.login("carlos", "abcd");
+        // Intentos fallidos para bloquear la cuenta
+        usuarioService.login("juan", "mal1");
+        usuarioService.login("juan", "mal2");
+        usuarioService.login("juan", "mal3");
 
-        // Sesión 4: Admin inicia sesión
-        Usuario sesionAdmin = service.login("admin", "admin123");
-        if (sesionAdmin != null) {
-            service.eliminarUsuario(sesionAdmin, 2); // elimina a Laura
-        }
+        // =========================
+        // CAMBIO DE ROL
+        // =========================
 
-        // -------- MOSTRAR HISTORIALES --------
-        System.out.println("\n--- HISTORIALES ---\n");
-        admin.mostrarHistorial();
-        user1.mostrarHistorial();
-        user2.mostrarHistorial(); 
-        
+        // El administrador cambia el rol del usuario
+        usuarioService.cambiarRol(admin, 2, Rol.ADMINISTRADOR);
+
+        // =========================
+        // BÚSQUEDA AVANZADA
+        // =========================
+
+        usuarioService.buscarPorNombre("juan");
+        usuarioService.buscarPorRol(Rol.ADMINISTRADOR);
+
+        // =========================
+        // AUDITORÍA GLOBAL
+        // =========================
+
+        usuarioService.verAuditoriaGlobal(admin);
+
+        // =========================
+        // FIN DEL PROGRAMA
+        // =========================
+
+        System.out.println("Programa finalizado.");
     }
 }
-
-      
+       
